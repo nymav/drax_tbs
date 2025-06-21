@@ -1,0 +1,17 @@
+import { useEffect, useState } from "react"
+import { fetchTextbooks } from "../api/textbooks.js"
+
+export default function useTextbooks() {
+  const [books,  setBooks ]  = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error,   setError]   = useState(null)
+
+  useEffect(() => {
+    fetchTextbooks()
+      .then(setBooks)
+      .catch(setError)
+      .finally(() => setLoading(false))
+  }, [])
+
+  return { books, loading, error }
+}
