@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+python-multipart        # For file uploads
+pydantic
+langchain
+chromadb                # Or faiss-cpu if you prefer
+sentence-transformers
+PyMuPDF                 # For PDF text extraction
+openai                  # Optional if using OpenAI embeddings
+requests                # For calling LM Studio
+sqlitedict              # Simple chat history storage
+tqdm                    # Progress bars
+python-dotenv           # Load .env config
