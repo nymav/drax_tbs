@@ -1,0 +1,231 @@
+{
+  "book1.pdf": {
+    "title": "Introduction to Machine Learning",
+    "author": "John Doe",
+    "chapters": [
+      "Basics",
+      "Models",
+      "Evaluation"
+    ],
+    "pages": 120
+  },
+  "book2.pdf": {
+    "title": "Deep Learning Guide",
+    "author": "Jane Smith",
+    "pages": 200
+  },
+  "3844ee5d-ee0a-46ee-b914-df0d96551974.pdf": {
+    "title": "",
+    "author": "",
+    "pages": 451,
+    "chapters": []
+  },
+  "8c6c6e31-de26-4086-a698-aff28a75e734.pdf": {
+    "title": "",
+    "author": "",
+    "pages": 451,
+    "chapters": []
+  },
+  "111f016c-ff9e-4c3e-bfcf-b691191be747.pdf": {
+    "title": "",
+    "author": "",
+    "pages": 451,
+    "chapters": []
+  },
+  "d5ad18c6-ae05-4967-be51-ebe65340ee24.pdf": {
+    "title": "",
+    "author": "",
+    "pages": "?",
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "710ee541-c1c8-4eec-9d31-577dc707ba46.pdf": {
+    "title": "",
+    "author": "",
+    "pages": "?",
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "a911a32b-c5c8-42d8-97a8-12c9d7bcc20d.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "49f18ff7-0c9e-4fd1-b2d4-ca827ce13f01.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "6dbe931f-3cbd-46e1-9a7d-16a2af66f1e5.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "9a5396c1-3d88-485c-b1b2-75d518978843.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "c44374ab-c23c-4da5-a6ef-da3e0fab5641.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "a79be980-2cd6-416c-b1f5-c758880b4e3d.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "8a3db7ee-fa55-40e1-afa9-d0673e4f211c.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "5785bdc9-abf3-4b2d-a35c-274c1759f838.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "f62b4965-0749-446d-87ef-17909cf46542.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "785ffff3-d6b8-4b76-b012-3cedc5b03afb.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "389dc824-c118-4eef-afee-76444f77952c.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "8043ca27-cb79-4752-ab58-e3c830324054.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "3c401833-6903-449b-bfa7-2d36a017358b.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "50537826-5fed-4f24-a690-a3c9fc7a20bf.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "9c9d5c37-092b-4e27-a003-8e8a71eee4e6.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "b2025dc2-21a9-41bc-819e-1454a99ce87d.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "15a331e0-e126-46bc-a6c2-01bac48dacb2.pdf": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "62c44b56-33d5-4534-8d62-193d8c87a19b": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "a3006fc0-44d9-4838-a6b8-9ef4baff9cf1": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "73805c63-5ea7-41e9-8adf-3e374666c00f": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "7da43dc4-c7bd-478e-bf15-a3aed4c422a6": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "6bebf0da-1859-40fc-882b-8494b1dd3d65": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "66a2c8c6-e57a-412c-9bfd-f9322ee879dc": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "517bfbbf-e102-4f41-850b-68d3077b6003": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "ede8c59b-a2ba-4459-ae9b-5033969b12ef": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  },
+  "d3321691-9d18-4243-9424-a0b4b97e5291": {
+    "title": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress",
+    "author": "Unknown",
+    "pages": 451,
+    "chapters": [],
+    "original_name": "generative-ai-with-python-and-pytorch-navigating-the-ai-frontier-with-llms-stable-diffusion-and-next-gen-ai-applications-2nbsped-9781835884447_compress"
+  }
+}
