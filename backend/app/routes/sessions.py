@@ -1,14 +1,22 @@
-from fastapi import APIRouter
-import sqlite3
-from app.config import BASE_DIR
+from uuid import UUID
+from fastapi import APIRouter, HTTPException
+from app.services import store
 
 router = APIRouter(prefix="/sessions")
-DB_PATH = BASE_DIR / "db/chat_history.db"
+
+
+@router.get("")
+def list_sessions(book_id: UUID):
+    return store.list_sessions(str(book_id))
+
 
 @router.get("/{session_id}")
-def get_history(session_id: str):
-    with sqlite3.connect(DB_PATH) as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT role, query, answer FROM history WHERE session_id=?", (session_id,))
-        rows = cur.fetchall()
-    return [{"role": r, "query": q, "answer": a} for r, q, a in rows]
+def get_history(session_id: UUID):
+    if not store.get_session(str(session_id)):
+        raise HTTPException(404, "Session not found.")
+    return store.history(str(session_id))
+
+
+@router.delete("/{session_id}", status_code=204)
+def delete_session(session_id: UUID):
+    store.delete_session(str(session_id))

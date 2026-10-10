@@ -1,249 +1,155 @@
-# DRAX TBS - AI-Powered Tutoring System
+# DRAX TBS
 
-A comprehensive Retrieval-Augmented Generation (RAG) based tutoring system that allows students to upload textbooks and engage in intelligent conversations with an AI tutor. The system processes PDF documents, creates vector embeddings, and provides contextual responses based on the uploaded content.
+**A document-only study workspace. Learn from the source, then check the page.**
 
-## Features
+DRAX turns a text-based PDF into a personal study space: guided learning, layered explanations, study notes, practice questions, and feedback on your own answer. A source desk keeps retrieved passages visible beside the conversation. Every passage retains its actual PDF page number.
 
-- **PDF Document Processing**: Upload and process textbook PDFs for intelligent tutoring
-- **Vector Search**: Advanced semantic search using ChromaDB for relevant content retrieval
-- **AI Chat Interface**: Interactive chatbot powered by LM Studio integration
-- **Session Management**: Persistent chat sessions with history tracking
-- **Role-Based Learning**: Customizable AI tutor personality and teaching style
-- **Real-time Responses**: Fast, contextual responses based on uploaded textbooks
-- **Modern Web Interface**: Clean, responsive React frontend with Tailwind CSS
+![DRAX study workspace](docs/images/study-desktop.png)
 
-## Architecture
+## What changed in v2
 
-### Backend (Python/FastAPI)
-- **FastAPI**: Modern, fast web framework for building APIs
-- **ChromaDB**: Vector database for semantic search and embeddings
-- **Sentence Transformers**: For generating text embeddings
-- **PyMuPDF**: PDF processing and text extraction
-- **SQLite**: Chat history and session persistence
+- Five distinct learning modes, with overview, standard, and deep-dive settings.
+- Document-scoped retrieval and optional page ranges. No general-knowledge fallback or web browsing.
+- Actual page references, expandable evidence cards, and an original-PDF viewer.
+- Persisted study sessions, session switching, and Markdown exports with source passages.
+- A real sample PDF for exploring the workflow without downloading an AI model.
+- Upload validation, size/page limits, scanned-page guidance, and atomic re-indexing.
+- A calm, responsive interface with keyboard controls, reduced-motion support, and native modal dialogs.
+- Lightweight keyword retrieval by default; neural retrieval is an explicit optional installation.
 
-### Frontend (React/Vite)
-- **React**: Modern UI library for building interactive interfaces
-- **Vite**: Fast build tool and development server
-- **Tailwind CSS**: Utility-first CSS framework for styling
-- **Axios**: HTTP client for API communication
+## Run locally
 
-## Prerequisites
+Use **Python 3.11+** and **Node.js 22.12+**.
 
-- Python 3.9+
-- Node.js 16+
-- LM Studio (for local AI model hosting)
-
-## Installation
-
-### Backend Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/nymav/drax_tbs.git
-   cd drax_tbs
-   ```
-
-2. **Create and activate virtual environment**
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables**
-   Create a `.env` file in the backend directory:
-   ```env
-   LMSTUDIO_BASE_URL=http://localhost:1234/v1
-   LMSTUDIO_API_KEY=your-api-key
-   EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-   VECTOR_STORE_PATH=./data/vector_store
-   ```
-
-### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd ../frontend
-   ```
-
-2. **Install Node.js dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Build the frontend**
-   ```bash
-   npm run build
-   ```
-
-### LM Studio Setup
-
-1. **Download and install LM Studio**
-   - Visit [LM Studio website](https://lmstudio.ai/) and download the application
-
-2. **Load a model**
-   - Open LM Studio
-   - Browse and download a suitable model (e.g., Llama 2, Mistral)
-   - Start the local server on port 1234
-
-## Running the Application
-
-### Start the Backend Server
-```bash
-cd backend
-source venv/bin/activate
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```sh
+git clone https://github.com/nymav/drax_tbs.git
+cd drax_tbs
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.lock
+cp backend/.env.example backend/.env
+PYTHONPATH=backend uvicorn app.main:app --host 127.0.0.1 --port 8007
 ```
 
-### Start the Frontend (Development)
-```bash
-cd frontend
+In a second terminal:
+
+```sh
+cd drax_tbs/frontend
+npm ci
 npm run dev
 ```
 
-The application will be available at:
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8000`
-- API Documentation: `http://localhost:8000/docs`
+Open [localhost:5177](http://localhost:5177). On Windows, activate `.venv\Scripts\activate` and set `$env:PYTHONPATH="backend"` in PowerShell before starting the backend.
 
-## Usage
+The locked Python environment includes test tools. For a lean runtime installation, use `backend/requirements.txt`; its version ranges are less reproducible than the lock file.
 
-### 1. Upload Textbooks
-- Navigate to the upload section
-- Select and upload PDF textbooks
-- Wait for processing and embedding generation
+### Without a model
 
-### 2. Start Tutoring Session
-- Select a processed textbook from the dropdown
-- Choose your preferred tutor role/personality
-- Begin asking questions about the content
+Upload a PDF or choose **Try a sample document**. DRAX indexes the actual text and returns real source passages. The interface labels this **Source passages**, not AI tutoring. Out-of-document questions return **No match** without a model call.
 
-### 3. Chat Interface
-- Ask questions related to your uploaded textbooks
-- Receive contextual answers based on the document content
-- View chat history and maintain conversation context
+### With LM Studio
 
-## API Endpoints
+1. Load a chat/instruction model in LM Studio and start its local OpenAI-compatible server.
+2. The model must support [LM Studio’s JSON Schema output](https://lmstudio.ai/docs/developer/openai-compat/structured-output). Keep the model server local; the default endpoint is `http://127.0.0.1:1234/v1/chat/completions`.
+3. Set `LMSTUDIO_MODEL` in `backend/.env`, or leave it blank to discover the first available model.
+4. Restart the backend, then refresh the workspace.
 
-### Core Endpoints
-- `POST /api/upload` - Upload PDF textbooks
-- `GET /api/textbooks` - List available textbooks
-- `POST /api/chat` - Send chat messages
-- `GET /api/sessions` - Manage chat sessions
-- `POST /api/embed` - Generate embeddings for documents
+DRAX accepts a loopback HTTP model endpoint only. It does not silently switch to a cloud provider. A connection failure, timeout, truncated response, or invalid source references produces a visible source-only result.
 
-### Health Check
-- `GET /health` - Application health status
+## Learning layers
 
-## Project Structure
+| Mode | Purpose |
+| --- | --- |
+| Guided learning | Explain a step and ask the learner to reason about the next one |
+| Explain | Define a concept, unpack its mechanism, and use document-supported examples |
+| Study notes | Condense retrieved passages while preserving qualifications |
+| Practice | Generate questions with a separately revealable answer key |
+| Review my answer | Compare the learner’s explanation against retrieved passages |
 
+Depth changes the explanation instructions and output budget. It does not improve retrieval accuracy by itself.
+
+Ask using terms from the document. A page range restricts search to those pages. Overview/practice requests intentionally use the first six passages in scope: they are **not a full-book analysis**. Generated responses include `[S1]` references matching the retrieved cards; these checks validate source IDs, not whether every claim is supported.
+
+## Optional neural retrieval
+
+```sh
+pip install -r backend/requirements-semantic.txt
 ```
-drax_tbs/
-├── backend/
-│   ├── app/
-│   │   ├── routes/          # API route handlers
-│   │   ├── services/        # Business logic
-│   │   ├── models/          # Data models
-│   │   ├── utils/           # Utility functions
-│   │   └── main.py          # FastAPI application
-│   ├── data/
-│   │   ├── pdfs/           # Uploaded PDF files
-│   │   ├── vector_store/   # ChromaDB vector storage
-│   │   └── textbooks.json  # Textbook metadata
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── api/           # API client functions
-│   │   ├── hooks/         # Custom React hooks
-│   │   └── styles/        # CSS styles
-│   ├── dist/              # Built frontend files
-│   └── package.json
-└── README.md
+
+Set `DRAX_RETRIEVAL=semantic` and restart. Re-index each PDF using **Index document** before querying it. The first indexing operation downloads the configured sentence-transformer model; subsequent inference is local. Switching models requires re-indexing. The default model is `all-MiniLM-L6-v2`.
+
+This is exact cosine search over a small personal library, not a large-scale vector service. The similarity cutoff is a heuristic, not an evaluated accuracy guarantee. Neural dependencies and live neural quality have not been validated in the core preview.
+
+## Storage and privacy
+
+- PDFs, extracted passages, optional vectors, and study sessions are stored on the backend machine under `backend/.drax-data/` by default. Set `DRAX_DATA_DIR` to change the location.
+- Local generation sends the learner’s question and retrieved passages to the configured local model. There are no analytics, external fonts, or remote AI fallback in the app.
+- A remotely hosted backend receives and stores uploaded documents. **This is not a browser-only PDF tool.**
+- All users of one workspace share its library. There are no separate accounts or per-user isolation.
+- Deleting a document removes its active file, index, and sessions. This is not forensic secure erasure; backups and SQLite free pages may retain data.
+
+The v2 commit stops tracking uploaded books, generated indexes, and `node_modules`. Existing local legacy files are preserved. Previously committed files remain in Git history; this change does not erase historical data.
+
+### Existing v1 documents
+
+The new workspace does not automatically open old `backend/data` files. To import your own legacy PDFs explicitly, start the backend and run:
+
+```sh
+python scripts/import_legacy.py backend/data/pdfs
 ```
+
+This copies each PDF through the new upload/indexing flow. Originals remain unchanged; old conversations and Chroma indexes are not migrated. Re-running imports creates additional copies.
 
 ## Configuration
 
-### Environment Variables
+See [backend/.env.example](backend/.env.example) and [frontend/.env.example](frontend/.env.example).
 
-**Backend (.env)**
-```env
-LMSTUDIO_BASE_URL=http://localhost:1234/v1
-LMSTUDIO_API_KEY=your-api-key
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-VECTOR_STORE_PATH=./data/vector_store
-DATABASE_URL=sqlite:///./app/db/chat_history.db
-MAX_FILE_SIZE=50MB
-```
+| Variable | Default / purpose |
+| --- | --- |
+| `DRAX_DATA_DIR` | Private runtime directory, independent of working directory |
+| `DRAX_MAX_FILE_MB` / `DRAX_MAX_PAGES` | 25 MB / 600 pages |
+| `DRAX_RETRIEVAL` | `lexical`; optional `semantic` |
+| `DRAX_EMBEDDING_MODEL` | Local sentence-transformer model for optional neural retrieval |
+| `LMSTUDIO_API` / `LMSTUDIO_MODEL` | Local model endpoint and selected model |
+| `DRAX_API_KEY` | Shared workspace key; required for network access |
+| `DRAX_CORS_ORIGINS` | Explicit allowed frontend origins |
+| `VITE_API_URL` | `/api` through the dev proxy; set a backend `/api` URL for separate hosting |
 
-### LM Studio Configuration
-- Ensure the local server is running on port 1234
-- Configure the model parameters (temperature, max tokens, etc.)
-- Set appropriate context window size for your use case
+For network hosting, use TLS, an explicit workspace key, restrictive CORS, and a reverse proxy with upload limits. Do not expose the model server publicly. The key is entered through **Workspace key** and stays in tab memory. GitHub Pages can host only the frontend; the Python API needs a server and persistent storage.
 
-## Testing
+## Validation
 
-### Backend Tests
-```bash
-cd backend
-python -m pytest tests/
-```
-
-### Frontend Tests
-```bash
+```sh
+pytest -q
+ruff check backend/app backend/tests scripts
 cd frontend
 npm test
+npm run build
 ```
 
-## Troubleshooting
+Regression tests cover real page provenance, document-only abstention, distinct prompts, invalid citations, session/document boundaries, upload limits, atomic indexing, access keys, and cascading deletion. Browser checks cover the sample, saved sessions, export, PDF/help dialogs, unmatched questions, and mobile overflow. See [validation notes](docs/validation.md) for scope and limitations.
 
-### Common Issues
+Generated explanations can still hallucinate or misinterpret a real passage. Prompt instructions and source-ID validation do not solve semantic correctness or prompt injection. Scanned PDFs need OCR before upload; tables, equations, and complex layouts may extract poorly. Stop waiting cancels the browser request, not an already-running model operation; reopen the session to check whether it completed.
 
-1. **LM Studio Connection Error**
-   - Ensure LM Studio is running and accessible at `http://localhost:1234`
-   - Check if the model is loaded and the server is started
+<details><summary>Mobile workspace</summary>
 
-2. **PDF Processing Issues**
-   - Verify PDF files are not corrupted or password-protected
-   - Check file size limits (default: 50MB)
+<img src="docs/images/study-mobile.png" width="320" alt="DRAX document study workspace on a narrow screen" />
 
-3. **Vector Store Errors**
-   - Clear the vector store directory if corrupted: `rm -rf backend/data/vector_store/*`
-   - Restart the application to reinitialize
+</details>
 
-4. **Port Conflicts**
-   - Backend: Change port in uvicorn command
-   - Frontend: Modify `vite.config.js` port settings
+## Architecture
 
-## Contributing
+```mermaid
+flowchart LR
+  UI[React study workspace] --> API[FastAPI · shared workspace key]
+  API --> PDF[PDF validation · page-aware passages]
+  PDF --> DB[(SQLite · library · passages · sessions)]
+  DB --> Search[Document and page-scoped retrieval]
+  Search --> Source[Inspectable source passages]
+  Source --> UI
+  Source --> Model[Optional local LM Studio model]
+  Model --> Check[Source ID validation]
+  Check --> UI
+```
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and commit: `git commit -m 'Add feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For support and questions:
-- Create an issue in the GitHub repository
-- Check the documentation at `/docs` endpoint
-- Review the API documentation at `/api/docs`
-
-## Future Enhancements
-
-- [ ] Multi-modal support (images, videos)
-- [ ] Advanced analytics and learning progress tracking
-- [ ] Mobile app development
-- [ ] Integration with external LLM services
-- [ ] Collaborative learning features
-- [ ] Advanced document parsing (tables, equations)
+Built by [Nikhil Yarra](https://github.com/nymav).

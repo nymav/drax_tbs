@@ -1,66 +1,56 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-import shutil, uuid, os, json
+import uuid
 from pathlib import Path
-import fitz  # PyMuPDF
-from app.config import UPLOAD_DIR
+import pymupdf as fitz
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from app import config
+from app.services import store
 
 router = APIRouter()
 
-@router.post("/uploads")
-async def upload_pdf(file: UploadFile = File(...)):
-    # Generate unique filename
-    orig_name = file.filename.rsplit('.', 1)[0]
-    file_uuid = str(uuid.uuid4())
-    filename = f"{file_uuid}.pdf"
-    save_path = UPLOAD_DIR / filename
 
+@router.post("/uploads", status_code=201)
+def upload_pdf(file: UploadFile = File(...)):
+    if not (file.filename or "").lower().endswith(".pdf"):
+        raise HTTPException(415, "Choose a PDF document.")
+    config.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    book_id = str(uuid.uuid4())
+    path = config.UPLOAD_DIR / f"{book_id}.pdf"
+    size = 0
     try:
-        # Save uploaded PDF to disk
-        with open(save_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        print(f"📄 Saved PDF: {save_path}")
-    except Exception as e:
-        print(f"❌ Failed to save PDF: {e}")
-        raise HTTPException(status_code=500, detail="File saving failed.")
-
-    # Try to extract metadata using PyMuPDF
-    try:
-        doc = fitz.open(str(save_path))
-        meta = doc.metadata or {}
-        title = (meta.get("title") or orig_name).strip()
-        author = (meta.get("author") or "Unknown").strip()
-        page_count = len(doc)
-    except Exception as e:
-        print(f"⚠️ Metadata extraction failed: {e}")
-        title = orig_name
-        author = "Unknown"
-        page_count = "?"
-
-    # Load or create metadata file
-    metadata_path = Path("data/textbooks.json")
-    metadata = {}
-    if metadata_path.exists():
-        with open(metadata_path) as f:
-            metadata = json.load(f)
-
-    # Update metadata for this PDF
-    metadata[file_uuid] = {
-        "title": title,
-        "author": author,
-        "pages": page_count,
-        "chapters": [],
-        "original_name": orig_name
-    }
-
-    # Save updated metadata
-    metadata_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(metadata_path, "w") as f:
-        json.dump(metadata, f, indent=2)
-
-    # ✅ Return clean response to frontend
-    return {
-        "pdf_id": file_uuid,
-        "title": title,
-        "author": author,
-        "pages": page_count
-    }
+        with path.open("wb") as target:
+            while chunk := file.file.read(1024 * 1024):
+                size += len(chunk)
+                if size > config.MAX_FILE_BYTES:
+                    raise HTTPException(413, f"PDFs must be smaller than {config.MAX_FILE_BYTES // 1024 // 1024} MB.")
+                target.write(chunk)
+        with fitz.open(path) as doc:
+            if not doc.is_pdf:
+                raise HTTPException(415, "This file is not a valid PDF.")
+            if doc.needs_pass:
+                raise HTTPException(422, "Unlock the password-protected PDF before upload.")
+            if not 0 < len(doc) <= config.MAX_PAGES:
+                raise HTTPException(422, f"PDF must have 1–{config.MAX_PAGES} pages.")
+            metadata = doc.metadata or {}
+            title = (metadata.get("title") or Path(file.filename).stem).strip()[:180]
+            author = (metadata.get("author") or "Unknown author").strip()[:180]
+            pages = len(doc)
+        store.add_book(book_id, title, author, pages)
+        return {
+            "pdf_id": book_id,
+            "id": book_id,
+            "title": title,
+            "author": author,
+            "pages": pages,
+            "status": "uploaded",
+        }
+    except HTTPException:
+        path.unlink(missing_ok=True)
+        raise
+    except (fitz.FileDataError, fitz.EmptyFileError, RuntimeError, ValueError):
+        path.unlink(missing_ok=True)
+        raise HTTPException(422, "The PDF is empty or damaged. Try exporting a new copy.")
+    except Exception:
+        path.unlink(missing_ok=True)
+        raise
+    finally:
+        file.file.close()

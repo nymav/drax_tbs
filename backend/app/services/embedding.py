@@ -1,6 +1,15 @@
-from sentence_transformers import SentenceTransformer
+"""Optional semantic search: no model download at server startup."""
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+from functools import lru_cache
+from app import config
+
+
+@lru_cache(maxsize=1)
+def get_model():
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(config.EMBEDDING_MODEL)
+
 
 def get_embeddings(chunks):
-    return model.encode(chunks, convert_to_tensor=False).tolist()
+    return get_model().encode(chunks, normalize_embeddings=True, convert_to_tensor=False).tolist()
