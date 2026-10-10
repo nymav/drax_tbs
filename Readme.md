@@ -2,7 +2,7 @@
 
 A comprehensive Retrieval-Augmented Generation (RAG) based tutoring system that allows students to upload textbooks and engage in intelligent conversations with an AI tutor. The system processes PDF documents, creates vector embeddings, and provides contextual responses based on the uploaded content.
 
-## 🚀 Features
+## Features
 
 - **PDF Document Processing**: Upload and process textbook PDFs for intelligent tutoring
 - **Vector Search**: Advanced semantic search using ChromaDB for relevant content retrieval
@@ -12,7 +12,7 @@ A comprehensive Retrieval-Augmented Generation (RAG) based tutoring system that 
 - **Real-time Responses**: Fast, contextual responses based on uploaded textbooks
 - **Modern Web Interface**: Clean, responsive React frontend with Tailwind CSS
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (Python/FastAPI)
 - **FastAPI**: Modern, fast web framework for building APIs
@@ -27,19 +27,19 @@ A comprehensive Retrieval-Augmented Generation (RAG) based tutoring system that 
 - **Tailwind CSS**: Utility-first CSS framework for styling
 - **Axios**: HTTP client for API communication
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Python 3.9+
 - Node.js 16+
 - LM Studio (for local AI model hosting)
 
-## 🛠️ Installation
+## Installation
 
 ### Backend Setup
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/nymav/drax_tbs.git
    cd drax_tbs
    ```
 
@@ -91,7 +91,7 @@ A comprehensive Retrieval-Augmented Generation (RAG) based tutoring system that 
    - Browse and download a suitable model (e.g., Llama 2, Mistral)
    - Start the local server on port 1234
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Start the Backend Server
 ```bash
@@ -111,7 +111,7 @@ The application will be available at:
 - Backend API: `http://localhost:8000`
 - API Documentation: `http://localhost:8000/docs`
 
-## 📚 Usage
+## Usage
 
 ### 1. Upload Textbooks
 - Navigate to the upload section
@@ -128,7 +128,7 @@ The application will be available at:
 - Receive contextual answers based on the document content
 - View chat history and maintain conversation context
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Core Endpoints
 - `POST /api/upload` - Upload PDF textbooks
@@ -140,7 +140,7 @@ The application will be available at:
 ### Health Check
 - `GET /health` - Application health status
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 drax_tbs/
@@ -167,7 +167,7 @@ drax_tbs/
 └── README.md
 ```
 
-## 🔒 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -186,7 +186,7 @@ MAX_FILE_SIZE=50MB
 - Configure the model parameters (temperature, max tokens, etc.)
 - Set appropriate context window size for your use case
 
-## 🧪 Testing
+## Testing
 
 ### Backend Tests
 ```bash
@@ -200,7 +200,7 @@ cd frontend
 npm test
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -220,7 +220,7 @@ npm test
    - Backend: Change port in uvicorn command
    - Frontend: Modify `vite.config.js` port settings
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
@@ -228,18 +228,18 @@ npm test
 4. Push to the branch: `git push origin feature-name`
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
+## Support
 
 For support and questions:
 - Create an issue in the GitHub repository
 - Check the documentation at `/docs` endpoint
 - Review the API documentation at `/api/docs`
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - [ ] Multi-modal support (images, videos)
 - [ ] Advanced analytics and learning progress tracking
