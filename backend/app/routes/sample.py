@@ -40,7 +40,7 @@ def sample():
     store.add_book(SAMPLE_ID, "A small guide to better studying", "DRAX sample material", len(PAGES))
     passages, _ = pdf_utils.extract_and_clean(path)
     vectors = None
-    if config.RETRIEVAL_MODE == "semantic":
+    if config.RETRIEVAL_MODE in {"semantic", "hybrid"}:
         from app.services.embedding import get_embeddings
 
         vectors = get_embeddings([p["text"] for p in passages])

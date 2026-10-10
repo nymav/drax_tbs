@@ -4,9 +4,20 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import uploads, embed, chat, sessions, textbooks, sample
 from app import config
-from app.services import lmstudio
+from app.services import lmstudio, jobs
+from app.routes import jobs as job_routes
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="DRAX · Document study workspace", version="2.0.0")
+
+@asynccontextmanager
+async def lifespan(app):
+    stop, thread = jobs.start()
+    yield
+    stop.set()
+    thread.join(6)
+
+
+app = FastAPI(title="DRAX · Document study workspace", version="3.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.CORS_ORIGINS,
@@ -33,7 +44,7 @@ async def protect_workspace(request: Request, call_next):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "version": "2.0.0"}
+    return {"status": "ok", "version": "3.0.0"}
 
 
 @app.get("/api/status")
@@ -57,5 +68,5 @@ def status():
         }
 
 
-for route in [uploads, embed, chat, sessions, textbooks, sample]:
+for route in [uploads, embed, chat, sessions, textbooks, sample, job_routes]:
     app.include_router(route.router, prefix="/api")

@@ -9,7 +9,15 @@ router = APIRouter()
 
 @router.get("/textbooks")
 def list_textbooks():
-    return store.list_books()
+    from app.services.index_version import stale
+
+    books = store.list_books()
+    for book in books:
+        try:
+            book["index_stale"] = book["status"] == "ready" and stale(book)
+        except (OSError, ValueError):
+            book["index_stale"] = True
+    return books
 
 
 @router.get("/textbooks/{book_id}/pdf")

@@ -153,7 +153,10 @@ def test_page_scope_does_not_answer_an_unrelated_question(client, monkeypatch):
     assert result.json()["mode"] == "no_match"
 
 
-def test_local_provider_requires_structured_source_references(monkeypatch):
+def test_local_provider_requires_structured_source_references(monkeypatch, tmp_path):
+    monkeypatch.setattr(config, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(lmstudio, "count_tokens", lambda model, system, prompt: len((system + prompt).encode()) + 256)
+
     class Response:
         def raise_for_status(self):
             pass
@@ -163,7 +166,9 @@ def test_local_provider_requires_structured_source_references(monkeypatch):
                 "choices": [
                     {
                         "finish_reason": "stop",
-                        "message": {"content": '{"answer":"A supported point.","source_ids":["S1"]}'},
+                        "message": {
+                            "content": '{"answer":"A supported point.","source_ids":["S1"],"claims":[{"claim":"A supported point.","source_id":"S1","quote":"A supported point."}]}'
+                        },
                     }
                 ]
             }
@@ -171,7 +176,8 @@ def test_local_provider_requires_structured_source_references(monkeypatch):
     monkeypatch.setattr(config, "LMSTUDIO_MODEL", "test-model")
     monkeypatch.setattr(config, "LMSTUDIO_API", "http://127.0.0.1:1234/v1/chat/completions")
     monkeypatch.setattr(lmstudio.requests, "post", lambda *a, **kw: Response())
-    answer = lmstudio.ask_local_llm("context", "system")
+    monkeypatch.setattr(lmstudio, "loaded_context", lambda model: 4096)
+    answer = lmstudio.ask_local_llm("[S1] Page 1: A supported point.\nLearner request: explain", "system")
     assert "[S1]" in answer and "A supported point." in answer
 
     class Invalid(Response):

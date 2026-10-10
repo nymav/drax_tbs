@@ -8,6 +8,7 @@ class ChatQuery(BaseModel):
     role: Literal["tutor", "explainer", "summarizer", "quizzer", "reviewer", "strict", "default"] = "tutor"
     pdf_id: UUID
     session_id: UUID | None = None
+    section_id: str | None = Field(default=None, max_length=80)
     depth: Literal["overview", "standard", "deep"] = "standard"
     page_from: int | None = Field(default=None, ge=1)
     page_to: int | None = Field(default=None, ge=1)
@@ -35,5 +36,7 @@ class ChatResponse(BaseModel):
     session_id: str
     mode: Literal["generated", "evidence", "no_match"]
     notice: str | None = None
+    claims: list[dict] = []
+    token_budget: dict | None = None
     role: str
     depth: str

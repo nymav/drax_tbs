@@ -6,7 +6,20 @@ DRAX turns a text-based PDF into a personal study space: guided learning, layere
 
 ![DRAX study workspace](docs/images/study-desktop.png)
 
-## What changed in v2
+## Technical upgrades in v3
+
+- Structure-aware extraction: paragraph boundaries, detected table cells, bounding boxes, page dimensions, PDF outlines, and explicitly labelled inferred headings.
+- A persisted document/section hierarchy and section-scoped search. Original page numbers remain authoritative.
+- Optional **hybrid BM25 + cosine retrieval**, reciprocal rank fusion, then a local cross-encoder reranker.
+- Claim-level exact quote checks. Uncited free prose is discarded; invalid quotes fall back to source cards. The JSON grammar pairs allowed quotes with their actual source IDs. Quote membership **does not prove semantic correctness**.
+- Durable indexing and full-document study-note jobs, progress, at most three attempts, duplicate-job prevention, restart recovery, and actual worker-process cancellation.
+- Content-hash upload deduplication and atomic replacement of the index, hierarchy, and completed job state.
+- Loaded-model context budgeting using LM Studio's tokenizer and prompt template. Lower-ranked evidence is trimmed before generation; conservative UTF-8 budgeting is the fallback.
+- Index fingerprints include file SHA-256, extractor version, embedding model, and vector dimension. Stale indexes require an explicit re-index.
+- Versioned SQLite migrations, WAL, query indexes, one queue owner per workspace, bounded model calls, session serialization, and transactional turn writes.
+- Verified local backup/restore tools, regression tests, and a labelled retrieval benchmark with a CI gate.
+
+## Workspace features
 
 - Five distinct learning modes, with overview, standard, and deep-dive settings.
 - Document-scoped retrieval and optional page ranges. No general-knowledge fallback or web browsing.
@@ -68,7 +81,7 @@ DRAX accepts a loopback HTTP model endpoint only. It does not silently switch to
 
 Depth changes the explanation instructions and output budget. It does not improve retrieval accuracy by itself.
 
-Ask using terms from the document. A page range restricts search to those pages. Overview/practice requests intentionally use the first six passages in scope: they are **not a full-book analysis**. Generated responses include `[S1]` references matching the retrieved cards; these checks validate source IDs, not whether every claim is supported.
+Ask using terms from the document. A page range restricts search to those pages. Overview/practice requests intentionally use the first six passages in scope: they are **not a full-book analysis**. Generated explanations are built from structured claims with `[S1]` references and exact source quotes. The application checks quote membership, not whether the explanation logically follows from it. **Read section digest** gives an extractive overview of every indexed passage. **Generate full-document notes** submits bounded batches of body/table passages to the local model and groups evidenced claims by section; coverage reports submitted and cited passages separately.
 
 ## Optional neural retrieval
 
@@ -76,9 +89,9 @@ Ask using terms from the document. A page range restricts search to those pages.
 pip install -r backend/requirements-semantic.txt
 ```
 
-Set `DRAX_RETRIEVAL=semantic` and restart. Re-index each PDF using **Index document** before querying it. The first indexing operation downloads the configured sentence-transformer model; subsequent inference is local. Switching models requires re-indexing. The default model is `all-MiniLM-L6-v2`.
+Set `DRAX_RETRIEVAL=hybrid` for BM25/cosine fusion plus cross-encoder reranking, or `semantic` for cosine alone, then restart. Re-index each PDF using **Index document** before querying it. The first indexing operation downloads the configured sentence-transformer model; subsequent inference is local. Switching models requires re-indexing. The default model is `all-MiniLM-L6-v2`.
 
-This is exact cosine search over a small personal library, not a large-scale vector service. The similarity cutoff is a heuristic, not an evaluated accuracy guarantee. Neural dependencies and live neural quality have not been validated in the core preview.
+This is exact cosine search over a small personal library, not a large-scale vector service. The similarity cutoff is a heuristic, not an evaluated accuracy guarantee. Both neural models were exercised locally on the original regression corpus. Hybrid recall@3 and MRR were 1.00 across 12 questions; lexical recall@3 was 0.917 and MRR 0.875 on the same questions. The current source-selection score window is a heuristic; it retains candidates within three raw reranker points of the best result. This small corpus is a regression check, not a real-world accuracy estimate. See [benchmark results](benchmarks/hybrid-results.json). First-run downloads are public model weights; document inference stays local. Model loading is significantly slower than warm queries.
 
 ## Storage and privacy
 
@@ -153,3 +166,34 @@ flowchart LR
 ```
 
 Built by [Nikhil Yarra](https://github.com/nymav).
+
+## Jobs, context, and recovery
+
+The UI uses `POST /api/jobs/index/{book_id}` and polls `/api/jobs/{id}`. Cancellation terminates the child process, leaving the previous committed index intact. For study-note jobs, this stops further batches and saving a result; LM Studio controls whether an already submitted inference stops on client disconnect. Completed jobs cannot be undone by cancellation. The synchronous `/api/embed/{book_id}` endpoint remains for scripts and compatibility. Run **one uvicorn process per workspace**; a file lock rejects a second queue owner. Jobs interrupted by a process restart are recovered with the same three-attempt limit. Normal extraction limits still apply. Full-document notes can take many local-model calls for a long document; use section-scoped study for faster focused work.
+
+The model budget uses its actual loaded context, not the advertised maximum. The local SDK applies its prompt template and tokenizer; if tokenization is unavailable but loaded-context metadata is available, DRAX uses a conservative UTF-8 bound. If the context cannot be read, generation is refused and source passages remain usable.
+
+Tables are detected using PDF line geometry; borderless or image-only tables may not be recognised. Headings inferred from font sizes are heuristics. Scanned pages still need OCR. A generated summary is not guaranteed to cover every detail or be semantically faithful even when its quotes are valid.
+
+## Backup and restore
+
+Stop the server first so PDF files and the SQLite snapshot cannot change independently. The CLI requires an explicit stopped-server flag and refuses to overwrite an existing destination. Backups contain your documents and conversations: keep them private.
+
+```sh
+PYTHONPATH=backend python scripts/workspace_backup.py backup /private/path/drax-backup --server-stopped
+PYTHONPATH=backend python scripts/workspace_backup.py restore /private/path/drax-restored --snapshot /private/path/drax-backup --server-stopped
+```
+
+SQLite's backup API captures committed database contents; SHA-256 manifests and database/foreign-key checks verify the snapshot. Set `DRAX_DATA_DIR` to the restored directory before restarting. Active jobs in a restored snapshot return to the queue.
+
+## Retrieval regression benchmark
+
+```sh
+PYTHONPATH=backend python scripts/evaluate.py --gate
+# Requires the optional neural dependencies and first-run public model downloads:
+PYTHONPATH=backend python scripts/evaluate.py --neural --output benchmarks/hybrid-results.json
+```
+
+The core CI gate requires lexical recall@3 ≥ 0.95, MRR ≥ 0.90, and complete abstention on three unrelated queries, using the eight exact-term cases. The neural comparison also includes four paraphrases and runs both methods on identical queries. Reports include warm latency and Python-tracked peak memory, which excludes native tensor allocations. Quote rejection, context overflow, hierarchy/table extraction, real cancellation, retry recovery, atomic failures, concurrent turns, and backup tampering are covered by backend tests. Semantic faithfulness needs human review; no synthetic score is presented as proof.
+
+Detailed verification: [technical validation](docs/technical-validation.md). The Validate DRAX workflow also offers an optional manual neural benchmark using CPU model weights and a comparison gate.

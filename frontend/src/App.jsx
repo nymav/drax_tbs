@@ -111,6 +111,8 @@ export default function App() {
     [key, setKey] = useState(""),
     [pdf, setPdf] = useState(null),
     [dragging, setDragging] = useState(false);
+  const [indexJob, setIndexJob] = useState(null);
+  const [outline, setOutline] = useState([]), [sectionId, setSectionId] = useState(""), [digest, setDigest] = useState(null);
   const input = useRef(null),
     fileInput = useRef(null),
     abort = useRef(null),
@@ -147,6 +149,9 @@ export default function App() {
   async function selectBook(item) {
     if (busy) return;
     setBook(item);
+    setOutline([]);
+    setSectionId("");
+    setDigest(null);
     setTurns([]);
     setSessionId(null);
     setFrom("");
@@ -156,6 +161,7 @@ export default function App() {
     setNotice("");
     try {
       setSessions(await request(`/sessions?book_id=${item.id}`));
+      if (item.status === "ready") setOutline((await request(`/textbooks/${item.id}/hierarchy`)).sections);
     } catch (e) {
       setError(e.message);
     }
@@ -163,17 +169,45 @@ export default function App() {
   async function indexBook(item) {
     setBusy("Indexing document…");
     try {
-      const result = await request(`/embed/${item.id}`, { method: "POST" });
+      const queued = await request(`/jobs/index/${item.id}`, { method: "POST" });
+      setIndexJob(queued.id);
+      let job;
+      do {
+        await new Promise(resolve => setTimeout(resolve, 700));
+        job = await request(`/jobs/${queued.id}`);
+        setBusy(`Indexing · ${Math.round(job.progress * 100)}% · attempt ${job.attempt}/3`);
+      } while (["queued", "running"].includes(job.state));
+      if (job.state !== "completed") throw new Error(job.state === "cancelled" ? "Indexing cancelled. Previous index preserved." : job.error);
+      const result = JSON.parse(job.result);
       const ready = { ...item, status: "ready" };
       setBooks((old) => old.map((b) => (b.id === item.id ? ready : b)));
       setBook(ready);
+      setSectionId("");
+      setOutline((await request(`/textbooks/${item.id}/hierarchy`)).sections);
       if (result.sparse_pages.length)
         setNotice(
           `Little or no text on ${result.sparse_pages.length} page(s). Scanned content needs OCR.`,
         );
     } finally {
+      setIndexJob(null);
       setBusy("");
     }
+  }
+  async function summarizeDocument() {
+    setBusy("Preparing document notes…"); setError("");
+    try {
+      const queued = await request(`/jobs/summary/${book.id}`, {method: "POST"});
+      setIndexJob(queued.id);
+      let job;
+      do {
+        await new Promise(resolve => setTimeout(resolve, 700));
+        job = await request(`/jobs/${queued.id}`);
+        setBusy(`Document notes · ${Math.round(job.progress * 100)}% · attempt ${job.attempt}/3`);
+      } while (["queued", "running"].includes(job.state));
+      if (job.state !== "completed") throw new Error(job.state === "cancelled" ? "Document notes cancelled." : job.error);
+      setDigest(JSON.parse(job.result));
+    } catch(e) {setError(e.message);}
+    finally {setIndexJob(null); setBusy("");}
   }
   async function upload(file) {
     if (!file || busy) return;
@@ -192,7 +226,7 @@ export default function App() {
       const data = new FormData();
       data.append("file", file);
       const item = await request("/uploads", { method: "POST", body: data });
-      setBooks((old) => [item, ...old]);
+      setBooks((old) => [item, ...old.filter(b => b.id !== item.id)]);
       setBook(item);
       setTurns([]);
       setSessionId(null);
@@ -214,6 +248,8 @@ export default function App() {
       const item = await request("/sample", { method: "POST" });
       setBooks((old) => [item, ...old.filter((b) => b.id !== item.id)]);
       setBook(item);
+      setOutline((await request(`/textbooks/${item.id}/hierarchy`)).sections);
+      setSectionId("");
       setTurns([]);
       setSessions([]);
       setSessionId(null);
@@ -251,6 +287,7 @@ export default function App() {
           role,
           depth,
           pdf_id: book.id,
+          section_id: sectionId || null,
           session_id: sessionId,
           page_from: from ? Number(from) : null,
           page_to: to ? Number(to) : null,
@@ -590,6 +627,7 @@ export default function App() {
                       <option value="deep">Deep dive</option>
                     </select>
                   </label>
+                  {outline.length > 0 && <label>Section<select aria-label="Document section" value={sectionId} disabled={!!busy} onChange={e => setSectionId(e.target.value)}><option value="">Whole document</option>{outline.map(node => <option key={node.id} value={node.id}>{node.title} · pp. {node.page_from}–{node.page_to}</option>)}</select></label>}
                   <fieldset>
                     <legend>
                       Page range <span>(optional)</span>
@@ -618,9 +656,9 @@ export default function App() {
                   </fieldset>
                 </div>
               </section>
-              {book.status !== "ready" && (
+              {(book.status !== "ready" || book.index_stale) && (
                 <div className="alert">
-                  This PDF still needs indexing.
+                  This PDF needs a current index.
                   <button
                     disabled={!!busy}
                     onClick={() =>
@@ -843,7 +881,7 @@ export default function App() {
                 {book.pages} pages · {book.author}
               </span>
               <span>
-                {status?.retrieval === "semantic"
+                {status?.retrieval === "hybrid" ? "Hybrid + reranking" : status?.retrieval === "semantic"
                   ? "Semantic retrieval"
                   : "Keyword retrieval"}
               </span>
@@ -875,6 +913,9 @@ export default function App() {
                 silently answer from general knowledge.
               </p>
             </div>
+            <button className="quiet-button" disabled={!!busy || book.status !== "ready"} onClick={() => request(`/textbooks/${book.id}/digest`).then(setDigest).catch(e => setError(e.message))}>Read section digest</button>
+            <button className="quiet-button" disabled={!!busy || !status?.model_ready || book.status !== "ready"} onClick={summarizeDocument}>Generate full-document notes</button>
+            {indexJob && <button className="quiet-button" onClick={() => request(`/jobs/${indexJob}/cancel`, {method: "POST"}).catch(e => setError(e.message))}>Cancel job</button>}
             <button className="quiet-button" disabled={!!busy} onClick={() => indexBook(book).catch(e => setError(e.message))}>Re-index document</button>
             <button
               className="delete-button"
@@ -886,6 +927,7 @@ export default function App() {
           </aside>
         )}
       </div>
+      {digest && <Modal label="Document section digest" onClose={() => setDigest(null)}><button className="modal-close" aria-label="Close digest" onClick={() => setDigest(null)} autoFocus><Icon name="close" /></button><p className="eyebrow">DOCUMENT DIGEST</p><h2>{digest.title}</h2><p>{digest.notice}</p><p>{digest.coverage.passages ?? digest.coverage.submitted_passages} passages processed</p>{digest.sections.map(section => <section key={section.id}><h3>{section.title}</h3>{(section.notes || section.claims || []).map((note, index) => <blockquote key={note.passage_id || index}>{note.claim && <p>{note.claim}</p>}{note.quote}<br/><button className="quiet-button" onClick={() => {setDigest(null); openPage(note.page);}}>Page {note.page} ↗</button></blockquote>)}</section>)}</Modal>}
       {help && (
         <Modal label="How to use DRAX" onClose={() => setHelp(false)}>
           <button

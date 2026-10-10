@@ -1,4 +1,6 @@
 import uuid
+import hashlib
+import sqlite3
 from pathlib import Path
 import pymupdf as fitz
 from fastapi import APIRouter, UploadFile, File, HTTPException
@@ -16,6 +18,7 @@ def upload_pdf(file: UploadFile = File(...)):
     book_id = str(uuid.uuid4())
     path = config.UPLOAD_DIR / f"{book_id}.pdf"
     size = 0
+    digest = hashlib.sha256()
     try:
         with path.open("wb") as target:
             while chunk := file.file.read(1024 * 1024):
@@ -23,6 +26,7 @@ def upload_pdf(file: UploadFile = File(...)):
                 if size > config.MAX_FILE_BYTES:
                     raise HTTPException(413, f"PDFs must be smaller than {config.MAX_FILE_BYTES // 1024 // 1024} MB.")
                 target.write(chunk)
+                digest.update(chunk)
         with fitz.open(path) as doc:
             if not doc.is_pdf:
                 raise HTTPException(415, "This file is not a valid PDF.")
@@ -34,7 +38,21 @@ def upload_pdf(file: UploadFile = File(...)):
             title = (metadata.get("title") or Path(file.filename).stem).strip()[:180]
             author = (metadata.get("author") or "Unknown author").strip()[:180]
             pages = len(doc)
-        store.add_book(book_id, title, author, pages)
+        # Content-addressed duplicate detection (no filename-based guesses).
+        for existing in store.list_books():
+            existing_path = config.UPLOAD_DIR / f"{existing['id']}.pdf"
+            if existing_path.exists() and hashlib.sha256(existing_path.read_bytes()).hexdigest() == digest.hexdigest():
+                path.unlink()
+                return {**existing, "pdf_id": existing["id"], "duplicate": True}
+        try:
+            store.add_book(book_id, title, author, pages, digest.hexdigest())
+        except sqlite3.IntegrityError:
+            with store.connect() as db:
+                duplicate = db.execute("SELECT * FROM books WHERE file_hash=?", (digest.hexdigest(),)).fetchone()
+            if not duplicate:
+                raise
+            path.unlink()
+            return {**dict(duplicate), "pdf_id": duplicate["id"], "duplicate": True}
         return {
             "pdf_id": book_id,
             "id": book_id,

@@ -1,0 +1,10 @@
+{
+  "lexical": {
+    "queries": 8,
+    "recall_at_3": 1.0,
+    "mrr": 1.0,
+    "abstention": 1.0,
+    "p95_ms": 0.31754199881106615,
+    "python_peak_bytes": 21094
+  }
+}

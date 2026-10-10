@@ -1,0 +1,29 @@
+{
+  "description": "Original small regression corpus. Not a production accuracy estimate.",
+  "passages": [
+    {"page": 1, "text": "Active recall means retrieving an idea from memory before checking notes. Self testing exposes knowledge gaps."},
+    {"page": 2, "text": "Spaced practice distributes learning across separate sessions. Longer intervals can improve durable retention."},
+    {"page": 3, "text": "Feedback compares the learner's answer with the source and identifies a specific correction."},
+    {"page": 4, "text": "Photosynthesis uses chlorophyll to capture light energy. Plants convert carbon dioxide and water into sugars."},
+    {"page": 5, "text": "Cellular respiration releases energy from glucose. Mitochondria support aerobic respiration."},
+    {"page": 6, "text": "A database transaction groups writes into a single atomic operation. Failed transactions roll back."},
+    {"page": 7, "text": "Digital signatures verify document authenticity. Editing signed pages can invalidate signatures."},
+    {"page": 8, "text": "An inverted index maps terms to documents. BM25 ranks documents by query term relevance."}
+  ],
+  "queries": [
+    {"query": "active recall", "relevant": [1]},
+    {"query": "spaced practice", "relevant": [2]},
+    {"query": "feedback correction", "relevant": [3]},
+    {"query": "chlorophyll light energy", "relevant": [4]},
+    {"query": "glucose mitochondria", "relevant": [5]},
+    {"query": "transaction rollback", "relevant": [6]},
+    {"query": "digital signatures authenticity", "relevant": [7]},
+    {"query": "inverted index relevance", "relevant": [8]},
+    {"query": "test yourself without looking at the book", "relevant": [1], "semantic": true},
+    {"query": "revisit lessons on different days", "relevant": [2], "semantic": true},
+    {"query": "where does a cell break down sugar for energy", "relevant": [5], "semantic": true},
+    {"query": "all database changes succeed together or none do", "relevant": [6], "semantic": true}
+  ],
+  "abstentions": ["unicorn ownership statute", "cryptocurrency tax filing", "galactic teleportation theorem"],
+  "lexical_gate": {"recall_at_3": 0.95, "mrr": 0.90, "abstention": 1.0}
+}
