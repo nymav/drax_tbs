@@ -19,7 +19,7 @@ function App() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 to-slate-900 text-slate-100 p-4">
-      <Container>
+      <Container><p className="text-xs text-slate-300 mb-6">PORTFOLIO PREVIEW · Sample document metadata · Local inference not connected</p>
         <Header />
 
         <TextbookSelector onSelect={handleBookSelect} />
